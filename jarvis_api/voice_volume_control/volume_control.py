@@ -3,6 +3,7 @@ from comtypes import CLSCTX_ALL
 from pycaw.pycaw import AudioUtilities, IAudioEndpointVolume
 import speech_recognition as sr
 import re
+import keyboard
 
 def get_command():
     r = sr.Recognizer()
@@ -53,10 +54,16 @@ def process_command(command):
         volume.SetMasterVolumeLevelScalar(1.0, None)
         print("Volume set to 100%")
 
+# Флаг для определения, нужно ли прослушивать микрофон
+mic_enabled = True
 
 while True:
-    command = get_command()
-    if command:
-        process_command(command)
+    if mic_enabled:
+        command = get_command()
+        if command:
+            process_command(command)
+            mic_enabled = False  # Блокируем прослушивание микрофона после выполнения команды
+    else:
+        keyboard.wait('enter')  # Ожидаем нажатия клавиши Enter для разблокировки микрофона
+        mic_enabled = True
         
-#В ОСНОВНОЙ ПРОГРАММЕ ДОБАВИТЬ ВОЗМОЖНОСТЬ ЗАПУСКАТЬ И ЗАВЕРШАТЬ РАБОТУ ГОЛОСОМ
