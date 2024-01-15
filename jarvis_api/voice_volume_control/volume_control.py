@@ -73,17 +73,20 @@ def process_command(command):
         volume.SetMasterVolumeLevelScalar(1.0, None)
         print("Volume set to 100%")
 
-mic_enabled = True
+def volume_control():
+    mic_enabled = True
 
-while True:
-    if mic_enabled:
-        command = get_command()
-        if command:
-            process_command(command)
-            mic_enabled = False  # Блокируем прослушивание микрофона после выполнения команды
-    else:
-        background_record()
+    while True:
+        if mic_enabled:
+            command = get_command()
+            if command:
+                process_command(command)
+                mic_enabled = False  # Блокируем прослушивание микрофона после выполнения команды
+        else:
+            background_record()
         
-        
+
+if __name__ == "__main__":
+    volume_control()
 #СДЕЛАТЬ ЧТОБЫ РАЗБЛОКИРОВКА ПРОИСХОДИЛА С ПОМОЩЬЮ СЛОВА JARVIS, И МИКРОФОН МОГ РАБОТАТЬ В ФОНОВОМ РЕЖИМЕ
         
