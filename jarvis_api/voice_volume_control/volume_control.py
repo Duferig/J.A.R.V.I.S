@@ -3,12 +3,12 @@ from comtypes import CLSCTX_ALL
 from pycaw.pycaw import AudioUtilities, IAudioEndpointVolume
 import speech_recognition as sr
 import re
-import keyboard
+
 
 def get_command():
     r = sr.Recognizer()
     with sr.Microphone() as source:
-        print("How can I help you?")
+        print("Listening...")
         audio = r.listen(source)
     try:
         command = r.recognize_google(audio, language='ru-RU')
@@ -19,6 +19,25 @@ def get_command():
     except sr.RequestError as e:
         print("Could not request results from Google Speech Recognition service; {0}".format(e))
     return None
+
+def background_record():
+    global mic_enabled
+    r = sr.Recognizer()
+    mic = sr.Microphone()
+
+    while not mic_enabled:
+        with mic as source:
+            print("Listening...")
+            audio = r.listen(source)
+        
+        try:
+            command = r.recognize_google(audio, language='en-US')
+            print("You said:", command)
+            if "jarvis" in command.lower():
+                mic_enabled = True
+                break
+        except sr.RequestError as e:
+            print("Could not request results from Google Speech Recognition service; {0}".format(e))
 
 def adjust_volume(volume, change_percentage):
     current_volume = volume.GetMasterVolumeLevelScalar() * 100
@@ -54,7 +73,6 @@ def process_command(command):
         volume.SetMasterVolumeLevelScalar(1.0, None)
         print("Volume set to 100%")
 
-# Флаг для определения, нужно ли прослушивать микрофон
 mic_enabled = True
 
 while True:
@@ -64,6 +82,8 @@ while True:
             process_command(command)
             mic_enabled = False  # Блокируем прослушивание микрофона после выполнения команды
     else:
-        keyboard.wait('enter')  # Ожидаем нажатия клавиши Enter для разблокировки микрофона
-        mic_enabled = True
+        background_record()
+        
+        
+#СДЕЛАТЬ ЧТОБЫ РАЗБЛОКИРОВКА ПРОИСХОДИЛА С ПОМОЩЬЮ СЛОВА JARVIS, И МИКРОФОН МОГ РАБОТАТЬ В ФОНОВОМ РЕЖИМЕ
         
